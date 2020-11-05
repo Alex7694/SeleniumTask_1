@@ -1,19 +1,15 @@
-package task_1;
+package SberInsuarance;
 
 import org.junit.*;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import task_1.steps.BaseSteps;
 
 import java.util.concurrent.TimeUnit;
 
-public class InsuaranceTest extends BaseSteps {
+public class InsuaranceTest {
     WebDriver driver;
     String baseUrl;
 
@@ -28,10 +24,7 @@ public class InsuaranceTest extends BaseSteps {
     }
 
     @Test
-    public void testInsuarance() {
-
-        //Открываем сайт Сбербанка
-        driver.get(baseUrl);
+    public void testInsuarance() throws InterruptedException {
 
         //Переходим в меню "Страхование"
         driver.findElement(By.xpath("//a[@aria-label = 'Меню  Страхование']")).click();
@@ -43,13 +36,28 @@ public class InsuaranceTest extends BaseSteps {
         Wait<WebDriver> wait = new WebDriverWait(driver, 10, 1000);
 
         //Проверяем наличие на странице заголовка "Страхование путешественников"
-        WebElement title = driver.findElement(By.xpath("//h3[text() = 'Страхование для путешественников']"));
-        wait.until(ExpectedConditions.visibilityOf(title));
-        Assert.assertEquals("Страхование для путешественников", title.getText());
+        try {
+            ((JavascriptExecutor) driver).executeScript("return arguments[0].scrollIntoView(true);", driver.findElement(By.xpath("//h3[text() = 'Страхование для путешественников']")));
+            WebElement title = driver.findElement(By.xpath("//h3[text() = 'Страхование для путешественников']"));
+            wait.until(ExpectedConditions.visibilityOf(title));
+            Assert.assertEquals("Страхование для путешественников", title.getText());
+        } catch (StaleElementReferenceException ex) {
+            ((JavascriptExecutor) driver).executeScript("return arguments[0].scrollIntoView(true);", driver.findElement(By.xpath("//h3[text() = 'Страхование для путешественников']")));
+            WebElement title = driver.findElement(By.xpath("//h3[text() = 'Страхование для путешественников']"));
+            wait.until(ExpectedConditions.visibilityOf(title));
+            Assert.assertEquals("Страхование для путешественников", title.getText());
+        }
 
         //Нажимаем на кнопку "Оформить онлайн" в разделе "Страхование для путешественников"
-        WebElement checkOnlineBtn = driver.findElement(By.xpath("//a[(contains(@href, 'viewCalc'))]"));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", checkOnlineBtn);
+        try {
+            WebElement checkOnlineBtn = driver.findElement(By.xpath("//a[(contains(@href, 'viewCalc'))]"));
+            wait.until(ExpectedConditions.elementToBeClickable(checkOnlineBtn));
+            checkOnlineBtn.click();
+        } catch (StaleElementReferenceException ex) {
+            WebElement checkOnlineBtn = driver.findElement(By.xpath("//a[(contains(@href, 'viewCalc'))]"));
+            wait.until(ExpectedConditions.elementToBeClickable(checkOnlineBtn));
+            checkOnlineBtn.click();
+        }
 
         //Выбираем сумму страховой защиты - "минимальная"
         driver.findElement(By.xpath("//h3[text() = 'Минимальная']")).click();
@@ -64,7 +72,7 @@ public class InsuaranceTest extends BaseSteps {
         fillField(By.id("birthDate_vzr_ins_0"), "20.02.1984");
 
         //В разделе "Страхователь" заполнить необходимые поля
-        driver.findElement(By.xpath("//label[contains(@class, 'ng-valid active' ) and text()= 'гражданин РФ']")).click();
+        driver.findElement(By.xpath("//label[text()= 'гражданин РФ']")).click();
         fillField(By.id("person_lastName"), "Петров");
         fillField(By.id("person_firstName"), "Петр");
         fillField(By.id("person_middleName"), "Петрович");
@@ -115,7 +123,7 @@ public class InsuaranceTest extends BaseSteps {
 
         //Проверить, что появилось сообщение "При заполнении данных произошла ошибка"
         Assert.assertEquals("При заполнении данных произошла ошибка",
-                driver.findElement(By.xpath("//div[contains(@class , 'alert-form alert-form-error')]")).getText());
+                driver.findElement(By.xpath("//div[contains(@class , 'alert-form-error')]")).getText());
     }
 
     public void fillField(By locator, String value) {
@@ -125,6 +133,6 @@ public class InsuaranceTest extends BaseSteps {
 
     @After
     public void afterTest() {
-      driver.quit();
+        driver.quit();
     }
 }

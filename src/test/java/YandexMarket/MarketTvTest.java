@@ -1,20 +1,18 @@
-package task_3;
+package YandexMarket;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class MarketHeadphonesTest {
+public class MarketTvTest {
     WebDriver driver;
     String baseUrl;
 
     @Before
+    @Ignore
     public void beforeTest() {
         System.setProperty("webdriver.chrome.driver", "drv/chromedriver.exe");
         baseUrl = "https://yandex.ru/";
@@ -25,13 +23,13 @@ public class MarketHeadphonesTest {
     }
 
     @Test
-    public void testInsuarance() {
+    public void testMarketTv() {
 
         //Открываем страницу Яндекса
         driver.get(baseUrl);
 
-        //Переходим в "Маркет"
-        driver.findElement(By.xpath("//a[contains(@href,'https://market.yandex.ru')]/div")).click();
+        //Переходим в раздел "Маркет"
+        driver.findElement(By.xpath("//div[text() = 'Маркет']")).click();
 
         //Получаем набор дескрипторов текущих открытых окон и сохранеям их
         ArrayList<String> windows = new ArrayList<String>(driver.getWindowHandles());
@@ -46,17 +44,20 @@ public class MarketHeadphonesTest {
         WebElement electroniсSection = driver.findElement(By.xpath("//span[text() = 'Электроника']"));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", electroniсSection);
 
-        //Переходим в раздел "Наушники и Bluetooth-гарнитуры"
-        driver.findElement(By.xpath("//a[contains(text(), 'Наушники и Bluetooth-гарнитуры')]")).click();
+        //Выбираем раздел "Телевизоры"
+        driver.findElement(By.xpath("//a[text() = 'Телевизоры' and  contains(@class, '2x2zBaVN-3')]")).click();
 
         //Входим в расширенный поиск
         driver.findElement(By.xpath("//span[text() = 'Все фильтры']")).click();
 
-        //Задаем параметр поиска от 5000 рублей.
-        fillField(By.xpath("//h4[contains(text(), 'Цена')]/../..//div[@data-prefix='от']/input"), "5000");
+        //Задаем параметр поиска от 20000 рублей.
+        fillField(By.xpath("//h4[contains(text(), 'Цена')]/../..//div[@data-prefix='от']/input"), "20000");
 
-        //Выбираем произодителя Beats
-        driver.findElement(By.xpath("//div[contains(text(), 'Beats')]")).click();
+        //Выбираем телевизор Samsung
+        driver.findElement(By.xpath("//div[(text() = 'Samsung')]")).click();
+
+        //Выбираем телевизор LG
+        driver.findElement(By.xpath("//div[(text() = 'LG')]")).click();
 
         //Нажимаем кнопку "Показать"
         driver.findElement(By.xpath("//a[contains(text(), 'Показать')]")).click();
@@ -64,8 +65,8 @@ public class MarketHeadphonesTest {
         //Получаем количество элементов результа поиска
         List<WebElement> searchResults = driver.findElements(By.xpath("//span[@data-tid = 'ce80a508']"));
 
-        //Сверяем количество элементов  поисковой выборки с константой (чтобы тест прошел приходится использовать 19)
-        Assert.assertEquals(19, searchResults.size());
+        // Сверяем количество элементов  поисковой выборки с константой (чтобы тест прошел приходится использовать 48)
+        Assert.assertEquals(48, searchResults.size());
 
         // Запоминаем первый элемент в списке
         String firstElement = searchResults.get(0).getText();
@@ -77,6 +78,7 @@ public class MarketHeadphonesTest {
         Assert.assertEquals(firstElement,
                 driver.findElement(By.xpath("//input[@placeholder= 'Искать товары и магазины']")).getAttribute("value"));
     }
+
 
     public void fillField(By locator, String value) {
         driver.findElement(locator).clear();
