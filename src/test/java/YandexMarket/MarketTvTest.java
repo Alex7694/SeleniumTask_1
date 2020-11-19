@@ -12,7 +12,6 @@ public class MarketTvTest {
     String baseUrl;
 
     @Before
-    @Ignore
     public void beforeTest() {
         System.setProperty("webdriver.chrome.driver", "drv/chromedriver.exe");
         baseUrl = "https://yandex.ru/";
@@ -23,6 +22,7 @@ public class MarketTvTest {
     }
 
     @Test
+    @Ignore
     public void testMarketTv() {
 
         //Открываем страницу Яндекса
